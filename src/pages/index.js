@@ -25,53 +25,6 @@ export default function HomePage() {
         checkAuth();
     }, [router]);
 
-    const navigationButtons = [
-        {
-            title: "Book a Room",
-            description: "Find and reserve your perfect room",
-            icon: "🛏️",
-            path: "/booking",
-            color: "from-blue-500 to-blue-600",
-            hoverColor: "hover:from-blue-600 hover:to-blue-700"
-        },
-        {
-            title: "My Bookings",
-            description: "View and manage your reservations",
-            icon: "📅",
-            path: "/my-bookings",
-            color: "from-green-500 to-green-600",
-            hoverColor: "hover:from-green-600 hover:to-green-700"
-        },
-        {
-            title: "Hotel Services",
-            description: "Explore our premium amenities",
-            icon: "⭐",
-            path: "/services",
-            color: "from-purple-500 to-purple-600",
-            hoverColor: "hover:from-purple-600 hover:to-purple-700"
-        },
-        {
-            title: "Special Offers",
-            description: "Exclusive deals and packages",
-            icon: "🎁",
-            path: "/offers",
-            color: "from-pink-500 to-pink-600",
-            hoverColor: "hover:from-pink-600 hover:to-pink-700"
-        },
-        {
-            title: "Contact & Support",
-            description: "24/7 customer service",
-            icon: "📞",
-            path: "/contact",
-            color: "from-orange-500 to-orange-600",
-            hoverColor: "hover:from-orange-600 hover:to-orange-700"
-        }
-    ];
-
-    const handleNavigation = (path) => {
-        router.push(path);
-    };
-
     // Show loading while checking authentication
     if (isCheckingAuth) {
         return (
@@ -123,35 +76,6 @@ export default function HomePage() {
                         </div>
                         <h1 className="text-3xl font-bold text-white font-serif">Luxury Stays</h1>
                     </motion.div>
-                    
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ delay: 0.5 }}
-                        className="flex space-x-4"
-                    >
-                        <motion.button
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                            onClick={() => router.push('/dashboard')}
-                            className="px-6 py-2 bg-white/20 backdrop-blur-sm text-white rounded-lg border border-white/30 hover:bg-white/30 transition-all duration-300"
-                        >
-                            Dashboard
-                        </motion.button>
-                        <motion.button
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                            onClick={() => {
-                                localStorage.removeItem("user");
-                                localStorage.removeItem("token");
-                                localStorage.removeItem("isLoggedIn");
-                                router.push("/login");
-                            }}
-                            className="px-6 py-2 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-lg shadow-lg hover:from-red-600 hover:to-red-700 transition-all duration-300"
-                        >
-                            Logout
-                        </motion.button>
-                    </motion.div>
                 </div>
             </motion.header>
 
@@ -185,71 +109,19 @@ export default function HomePage() {
                     Experience unparalleled luxury and comfort in our world-class hotels. 
                     Your extraordinary journey begins here.
                 </motion.p>
-            </motion.div>
 
-            {/* Navigation Grid */}
-            <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 1 }}
-                className="relative z-10 px-4 pb-16"
-            >
-                <div className="max-w-6xl mx-auto">
-                    <motion.h2
-                        initial={{ y: 20, opacity: 0 }}
-                        animate={{ y: 0, opacity: 1 }}
-                        transition={{ delay: 1.2 }}
-                        className="text-3xl font-bold text-white text-center mb-12 font-serif"
-                    >
-                        Explore Our Services
-                    </motion.h2>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
-                        {navigationButtons.map((button, index) => (
-                            <motion.button
-                                key={button.title}
-                                initial={{ y: 50, opacity: 0, scale: 0.9 }}
-                                animate={{ y: 0, opacity: 1, scale: 1 }}
-                                transition={{ 
-                                    duration: 0.6, 
-                                    delay: 1.4 + (index * 0.1),
-                                    type: "spring",
-                                    stiffness: 100
-                                }}
-                                whileHover={{ 
-                                    scale: 1.05, 
-                                    y: -5,
-                                    transition: { type: "spring", stiffness: 400 }
-                                }}
-                                whileTap={{ scale: 0.95 }}
-                                onClick={() => handleNavigation(button.path)}
-                                className={`bg-gradient-to-br ${button.color} ${button.hoverColor} text-white p-6 rounded-2xl shadow-xl backdrop-blur-sm border border-white/20 text-left transition-all duration-300 group`}
-                            >
-                                <motion.div
-                                    whileHover={{ rotate: 5, scale: 1.1 }}
-                                    className="text-3xl mb-4"
-                                >
-                                    {button.icon}
-                                </motion.div>
-                                <h3 className="text-xl font-bold mb-2 group-hover:text-gold-100 transition-colors">
-                                    {button.title}
-                                </h3>
-                                <p className="text-white/80 text-sm group-hover:text-white/90 transition-colors">
-                                    {button.description}
-                                </p>
-                                
-                                {/* Animated Arrow */}
-                                <motion.div
-                                    initial={{ x: -10, opacity: 0 }}
-                                    whileHover={{ x: 0, opacity: 1 }}
-                                    className="mt-4 text-right"
-                                >
-                                    <span className="text-lg">→</span>
-                                </motion.div>
-                            </motion.button>
-                        ))}
-                    </div>
-                </div>
+                {/* Explore Button */}
+                <motion.button
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 1.2 }}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => router.push('/dashboard')}
+                    className="px-12 py-4 bg-gradient-to-r from-gold-400 to-gold-600 text-white text-xl font-bold rounded-2xl shadow-2xl hover:from-gold-500 hover:to-gold-700 transition-all duration-300 transform hover:shadow-2xl border-2 border-gold-300"
+                >
+                    Explore
+                </motion.button>
             </motion.div>
 
             {/* Floating Elements */}
