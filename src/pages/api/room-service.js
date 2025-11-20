@@ -1,48 +1,35 @@
-import db from "@/lib/db"; // make sure this is your MySQL/MariaDB connection
+import db from "@/lib/db"; // adjust to your db connection file
 
 export default async function handler(req, res) {
-    if (req.method === "POST") {
-        // Place a new room service order
-        const { user_id, username, item_name, price, quantity } = req.body;
+if (req.method !== "POST") {
+return res.status(405).json({ message: "Method not allowed" });
+}
 
-        if (!user_id || !username || !item_name || !price) {
-            return res.status(400).json({ message: "Missing required fields" });
-        }
 
-        const total_price = price * (quantity || 1);
+try {
+    const { user_id, username, items } = req.body;
 
-        try {
-            const [result] = await db.execute(
-                "INSERT INTO room_service_orders (user_id, username, item_name, price, quantity, total_price) VALUES (?, ?, ?, ?, ?, ?)",
-                [user_id, username, item_name, price, quantity || 1, total_price]
-            );
-
-            return res.status(200).json({
-                message: "Order placed successfully!",
-                orderId: result.insertId
-            });
-        } catch (err) {
-            console.error("Database error:", err);
-            return res.status(500).json({ message: "Database error" });
-        }
-    } 
-    
-    else if (req.method === "GET") {
-        // Get all room service orders (for dashboard)
-        try {
-            const [orders] = await db.execute(
-                "SELECT * FROM room_service_orders ORDER BY created_at DESC"
-            );
-
-            return res.status(200).json(orders);
-        } catch (err) {
-            console.error("Database error:", err);
-            return res.status(500).json({ message: "Database error" });
-        }
-    } 
-    
-    else {
-        res.setHeader("Allow", ["GET", "POST"]);
-        return res.status(405).json({ message: `Method ${req.method} not allowed` });
+    if (!user_id || !username || !items || !Array.isArray(items) || items.length === 0) {
+        return res.status(400).json({ message: "Invalid request data." });
     }
+
+    // Insert each item into the database
+    for (const item of items) {
+        const { item_name, price, quantity } = item;
+        if (!item_name || !price || !quantity) continue;
+
+        await db.query(
+            `INSERT INTO room_service_orders (user_id, username, item_name, price, quantity, created_at)
+             VALUES (?, ?, ?, ?, ?, NOW())`,
+            [user_id, username, item_name, price, quantity]
+        );
+    }
+
+    return res.status(200).json({ message: "Order placed successfully." });
+} catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Internal server error." });
+}
+
+
 }
