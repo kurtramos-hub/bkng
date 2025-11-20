@@ -1,16 +1,14 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 
-export default function FeedbackPage() {
+export default function SupportPage() {
     const router = useRouter();
     const [user, setUser] = useState(null);
     const [message, setMessage] = useState("");
-    const [rating, setRating] = useState(0);
     const [success, setSuccess] = useState("");
     const [error, setError] = useState("");
 
     useEffect(() => {
-        // Get user info from localStorage
         const userData = localStorage.getItem("user");
         if (!userData) {
             router.push("/login");
@@ -22,31 +20,29 @@ export default function FeedbackPage() {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (!message || rating === 0) {
-            setError("Please enter a message and select a rating.");
+        if (!message) {
+            setError("Please enter your support message.");
             return;
         }
 
         try {
-            const res = await fetch("/api/feedback", {
+            const res = await fetch("/api/support", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    username: user.name, // Use account username
+                    username: user.name,
                     message,
-                    rating,
                 }),
             });
 
             if (res.ok) {
-                setSuccess("Thank you for your feedback!");
+                setSuccess("Your support request has been sent!");
                 setError("");
                 setMessage("");
-                setRating(0);
             } else {
-                setError("Failed to submit feedback. Try again.");
+                setError("Failed to send request. Try again.");
             }
         } catch (err) {
             console.error(err);
@@ -54,52 +50,39 @@ export default function FeedbackPage() {
         }
     };
 
-    if (!user) return null; // wait for user to load
+    if (!user) return null;
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-            <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-md">
-                <h1 className="text-2xl font-bold mb-4 text-gray-900">Submit Feedback</h1>
+            <div className="bg-white shadow-xl rounded-lg p-8 w-full max-w-md">
+                <h1 className="text-2xl font-bold mb-4 text-gray-900">Contact Support</h1>
+                <p className="text-gray-600 mb-6">
+                    Tell us your issue or concern and our team will respond.
+                </p>
 
                 {success && <p className="mb-4 text-green-600">{success}</p>}
                 {error && <p className="mb-4 text-red-600">{error}</p>}
 
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <textarea
-                        placeholder="Your Message"
+                        placeholder="Write your message..."
                         value={message}
                         onChange={(e) => setMessage(e.target.value)}
-                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                         rows={4}
+                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
                     ></textarea>
-
-                    <div className="flex items-center space-x-2">
-                        <span className="text-gray-700">Rating:</span>
-                        {[1, 2, 3, 4, 5].map((star) => (
-                            <button
-                                key={star}
-                                type="button"
-                                onClick={() => setRating(star)}
-                                className={`text-2xl ${
-                                    star <= rating ? "text-yellow-400" : "text-gray-300"
-                                }`}
-                            >
-                                ★
-                            </button>
-                        ))}
-                    </div>
 
                     <button
                         type="submit"
-                        className="w-full bg-blue-500 text-white py-2 rounded-lg font-semibold hover:bg-blue-600 transition-colors duration-300"
+                        className="w-full bg-orange-500 text-white py-2 rounded-lg font-semibold hover:bg-orange-600 transition"
                     >
-                        Submit Feedback
+                        Send Message
                     </button>
                 </form>
 
                 <button
                     onClick={() => router.push("/dashboard")}
-                    className="mt-4 w-full bg-gray-200 text-gray-700 py-2 rounded-lg hover:bg-gray-300 transition-colors duration-300"
+                    className="mt-4 w-full bg-gray-200 py-2 rounded-lg text-gray-700 hover:bg-gray-300 transition"
                 >
                     Back to Dashboard
                 </button>

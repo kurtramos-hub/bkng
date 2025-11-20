@@ -1,54 +1,45 @@
-import db from "@/lib/db";
+import { NextApiRequest, NextApiResponse } from "next";
+import mysql from "mysql2/promise";
+
+// Configure your database connection
+const dbConfig = {
+  host: process.env.DB_HOST,      // e.g., localhost
+  user: process.env.DB_USER,      // your DB username
+  password: process.env.DB_PASS,  // your DB password
+  database: process.env.DB_NAME,  // your database name
+};
 
 export default async function handler(req, res) {
   try {
-    // GET all feedback
+    const connection = await mysql.createConnection(dbConfig);
+
+    if (req.method === "POST") {
+      const { username, message, rating } = req.body;
+
+      if (!username || !message || !rating) {
+        return res.status(400).json({ error: "All fields are required." });
+      }
+
+      const [result] = await connection.execute(
+        "INSERT INTO feedbacks (username, message, rating) VALUES (?, ?, ?)",
+        [username, message, rating]
+      );
+
+      await connection.end();
+
+      return res.status(200).json({ success: true, id: result.insertId });
+    }
+
     if (req.method === "GET") {
-      const [rows] = await db.query(`SELECT * FROM feedback ORDER BY created_at DESC`);
+      const [rows] = await connection.execute("SELECT * FROM feedbacks ORDER BY created_at DESC");
+      await connection.end();
       return res.status(200).json(rows);
     }
 
-    // POST new feedback
-    if (req.method === "POST") {
-      const { rating, comment, category } = req.body;
-
-      // Validation
-      if (rating == null || !comment || !category) {
-        return res.status(400).json({ error: "Missing fields" });
-      }
-
-      // Parse user info from header
-      let user = {};
-      try {
-        user = JSON.parse(req.headers["x-user"] || "{}");
-      } catch (e) {
-        console.warn("Invalid x-user header");
-      }
-
-      const userId = user.id || null;
-      const userName = user.name || user.username || "Anonymous";
-
-      // Insert feedback
-      const [result] = await db.query(
-        `INSERT INTO feedback (user_id, user_name, rating, comment, category)
-         VALUES (?, ?, ?, ?, ?)`,
-        [userId, userName, rating, comment, category]
-      );
-
-      // Fetch the newly inserted feedback
-      const [inserted] = await db.query(
-        "SELECT * FROM feedback WHERE id = ?",
-        [result.insertId]
-      );
-
-      return res.status(201).json(inserted[0]);
-    }
-
-    // Method not allowed
-    return res.status(405).json({ error: "Method not allowed" });
-
+    res.setHeader("Allow", ["GET", "POST"]);
+    res.status(405).end(`Method ${req.method} Not Allowed`);
   } catch (err) {
-    console.error("SQL ERROR:", err);
-    return res.status(500).json({ error: "SQL error", details: err.message });
+    console.error(err);
+    res.status(500).json({ error: "Database connection error" });
   }
 }

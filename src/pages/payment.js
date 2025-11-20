@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 
-export default function FeedbackPage() {
+export default function PaymentPage() {
     const router = useRouter();
     const [user, setUser] = useState(null);
-    const [message, setMessage] = useState("");
-    const [rating, setRating] = useState(0);
+    const [amount, setAmount] = useState("");
+    const [method, setMethod] = useState("card");
     const [success, setSuccess] = useState("");
     const [error, setError] = useState("");
 
@@ -22,31 +22,31 @@ export default function FeedbackPage() {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (!message || rating === 0) {
-            setError("Please enter a message and select a rating.");
+        if (!amount) {
+            setError("Please enter an amount.");
             return;
         }
 
         try {
-            const res = await fetch("/api/feedback", {
+            const res = await fetch("/api/payment", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    username: user.name, // Use account username
-                    message,
-                    rating,
+                    username: user.name,
+                    amount: parseFloat(amount),
+                    method,
                 }),
             });
 
             if (res.ok) {
-                setSuccess("Thank you for your feedback!");
+                setSuccess("Payment processed successfully!");
                 setError("");
-                setMessage("");
-                setRating(0);
+                setAmount("");
+                setMethod("card");
             } else {
-                setError("Failed to submit feedback. Try again.");
+                setError("Failed to process payment. Try again.");
             }
         } catch (err) {
             console.error(err);
@@ -59,41 +59,35 @@ export default function FeedbackPage() {
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
             <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-md">
-                <h1 className="text-2xl font-bold mb-4 text-gray-900">Submit Feedback</h1>
+                <h1 className="text-2xl font-bold mb-4 text-gray-900">Payment</h1>
 
                 {success && <p className="mb-4 text-green-600">{success}</p>}
                 {error && <p className="mb-4 text-red-600">{error}</p>}
 
                 <form onSubmit={handleSubmit} className="space-y-4">
-                    <textarea
-                        placeholder="Your Message"
-                        value={message}
-                        onChange={(e) => setMessage(e.target.value)}
+                    <input
+                        type="number"
+                        placeholder="Amount"
+                        value={amount}
+                        onChange={(e) => setAmount(e.target.value)}
                         className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        rows={4}
-                    ></textarea>
+                    />
 
-                    <div className="flex items-center space-x-2">
-                        <span className="text-gray-700">Rating:</span>
-                        {[1, 2, 3, 4, 5].map((star) => (
-                            <button
-                                key={star}
-                                type="button"
-                                onClick={() => setRating(star)}
-                                className={`text-2xl ${
-                                    star <= rating ? "text-yellow-400" : "text-gray-300"
-                                }`}
-                            >
-                                ★
-                            </button>
-                        ))}
-                    </div>
+                    <select
+                        value={method}
+                        onChange={(e) => setMethod(e.target.value)}
+                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                        <option value="card">Credit/Debit Card</option>
+                        <option value="paypal">PayPal</option>
+                        <option value="bank">Bank Transfer</option>
+                    </select>
 
                     <button
                         type="submit"
-                        className="w-full bg-blue-500 text-white py-2 rounded-lg font-semibold hover:bg-blue-600 transition-colors duration-300"
+                        className="w-full bg-purple-500 text-white py-2 rounded-lg font-semibold hover:bg-purple-600 transition-colors duration-300"
                     >
-                        Submit Feedback
+                        Submit Payment
                     </button>
                 </form>
 
