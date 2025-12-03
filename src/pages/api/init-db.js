@@ -1,4 +1,4 @@
-import { initializeDatabase } from '@/lib/init-db';
+import  initializeDatabase  from '@/lib/init-db';
 
 export default async function handler(req, res) {
     if (req.method === 'POST') {
