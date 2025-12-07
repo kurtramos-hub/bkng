@@ -319,7 +319,7 @@ export default function PaymentPage() {
                             <form onSubmit={handleSubmit} className="space-y-6">
                                 <div>
                                     <label className="block text-gray-700 font-medium mb-2">
-                                        Amount (USD)
+                                        Amount
                                     </label>
                                     <div className="relative">
                                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
