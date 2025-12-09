@@ -164,7 +164,7 @@ export default function PaymentPage() {
                             <h2 className="text-xl font-bold text-gray-800">Your Orders</h2>
                             {orders.length > 0 && (
                                 <span className="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm font-semibold">
-                                    Total Due: ${calculateTotal()}
+                                    Total Due: ₱{calculateTotal()}
                                 </span>
                             )}
                         </div>
@@ -211,13 +211,13 @@ export default function PaymentPage() {
                                                         {order.item_name}
                                                     </h3>
                                                     <span className="font-bold text-purple-600 text-lg">
-                                                        ${(parseFloat(order.price) * parseInt(order.quantity)).toFixed(2)}
+                                                        ₱{(parseFloat(order.price) * parseInt(order.quantity)).toFixed(2)}
                                                     </span>
                                                 </div>
                                                 
                                                 <div className="grid grid-cols-2 gap-2 text-sm text-gray-600 mb-3">
                                                     <div>
-                                                        <span className="font-medium">Price:</span> ${parseFloat(order.price).toFixed(2)}
+                                                        <span className="font-medium">Price:</span> ₱{parseFloat(order.price).toFixed(2)}
                                                     </div>
                                                     <div>
                                                         <span className="font-medium">Quantity:</span> {order.quantity}
@@ -298,8 +298,8 @@ export default function PaymentPage() {
                                     <div className="grid grid-cols-2 gap-2 text-sm">
                                         <div><span className="font-medium">Item:</span> {selectedOrder.item_name}</div>
                                         <div><span className="font-medium">Quantity:</span> {selectedOrder.quantity}</div>
-                                        <div><span className="font-medium">Unit Price:</span> ${parseFloat(selectedOrder.price).toFixed(2)}</div>
-                                        <div><span className="font-medium">Total:</span> ${(parseFloat(selectedOrder.price) * parseInt(selectedOrder.quantity)).toFixed(2)}</div>
+                                        <div><span className="font-medium">Unit Price:</span> ₱{parseFloat(selectedOrder.price).toFixed(2)}</div>
+                                        <div><span className="font-medium">Total:</span> ₱{(parseFloat(selectedOrder.price) * parseInt(selectedOrder.quantity)).toFixed(2)}</div>
                                     </div>
                                     <button
                                         onClick={() => {
@@ -355,7 +355,7 @@ export default function PaymentPage() {
                                         <option value="card">💳 Credit/Debit Card</option>
                                         <option value="paypal">💰 PayPal</option>
                                         <option value="bank">🏦 Bank Transfer</option>
-                                        <option value="cash">💵 Cash (At Reception)</option>
+                                        
                                     </select>
                                 </div>
 
